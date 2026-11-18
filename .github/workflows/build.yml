@@ -36,36 +36,43 @@ jobs:
             sdk-index-url: https://up.unleashedflip.com/directory.json
             sdk-channel: release
             sdk-repo: ""
+            sdk-hw-target: ""
           - name: Unleashed (dev)
             slug: unleashed-dev
             sdk-index-url: https://up.unleashedflip.com/directory.json
             sdk-channel: dev
             sdk-repo: ""
+            sdk-hw-target: ""
           - name: Momentum (release)
             slug: momentum-release
             sdk-index-url: https://up.momentum-fw.dev/firmware/directory.json
             sdk-channel: release
             sdk-repo: ""
+            sdk-hw-target: ""
           - name: Momentum (dev)
             slug: momentum-dev
             sdk-index-url: https://up.momentum-fw.dev/firmware/directory.json
             sdk-channel: dev
             sdk-repo: ""
+            sdk-hw-target: ""
           - name: Doctor Firmware (latest)
             slug: doctor-fw
             sdk-index-url: ""
             sdk-channel: ""
             sdk-repo: thedoctorz/doctor-firmware
+            sdk-hw-target: f7
           - name: Official (release)
             slug: official-release
             sdk-index-url: ""
             sdk-channel: release
             sdk-repo: ""
+            sdk-hw-target: ""
           - name: Official (dev)
             slug: official-dev
             sdk-index-url: ""
             sdk-channel: dev
             sdk-repo: ""
+            sdk-hw-target: ""
 
     steps:
       - name: Checkout
@@ -92,6 +99,7 @@ jobs:
           sdk-index-url: ${{ matrix.sdk-index-url }}
           sdk-channel: ${{ matrix.sdk-channel }}
           sdk-url: ${{ steps.sdk-release.outputs.url }}
+          sdk-hw-target: ${{ matrix.sdk-hw-target }}
 
       - name: Prepare named FAP artifact
         run: |
