@@ -1,0 +1,9 @@
+dist/*
+.vscode
+.clang-format
+.clangd
+.editorconfig
+.env
+.ufbt
+__pycache__/
+*.pyc

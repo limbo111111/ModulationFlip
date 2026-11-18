@@ -1,0 +1,14 @@
+App(
+    appid="modulation_flip",
+    name="ModulationFlip",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="modulation_flip_app",
+    stack_size=4 * 1024,
+    fap_category="Sub-GHz",
+    fap_version="1.0",
+    fap_icon="modulation_flip.png",
+    fap_description="RF modulation, encoding & frequency reference for car and gate protocols",
+    fap_author="limbo111111",
+    fap_weburl="https://github.com/limbo111111/ModulationFlip",
+    sources=["src/*.c"],
+)
