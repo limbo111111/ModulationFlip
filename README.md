@@ -6,13 +6,23 @@ An offline RF modulation, encoding, and frequency reference application for **Fl
 
 ModulationFlip helps you quickly look up which RF modulation (`AM`, `FM`, `AM/FM`), line encoding, frequency band(s), encryption/coding behavior, and TX notes apply to car key fobs, alarms, garage doors, gates, barriers, and shutter remotes — strictly verified directly against Flipper Zero Sub-GHz firmware source code with zero unverified claims.
 
+## Screenshots
+
+| Startup Splash | Start Menu |
+| :---: | :---: |
+| ![Startup Splash](docs/screenshots/01_splash.png) | ![Start Menu](docs/screenshots/02_start_menu.png) |
+| **RF Filter / Band Menu** | **Cars & Alarms (`[RF Freq]` Badges)** |
+| ![Filter RF and Band](docs/screenshots/03_filter_menu.png) | ![Cars and Alarms List](docs/screenshots/04_cars_list.png) |
+| **Gates & Home (`[RF Freq]` Badges)** | **Detail Inspector** |
+| ![Gates and Home List](docs/screenshots/05_gates_list.png) | ![Detail Inspector](docs/screenshots/06_detail_inspector.png) |
+
 ## Dataset Scope
 
-- **142 protocols total**:
-  - **99 Car key fobs & alarms** (`Car/Key`)
+- **138 protocols total**:
+  - **95 Car key fobs & alarms** (`Car/Key`)
   - **43 Garage door, gate, barrier & shutter remotes** (`Gate/RF`)
-- **118 alphabetical brands / systems** mapped directly from protocol names.
-- Receive-only `rtl_433` weather/sensor protocols and CVE vulnerability tables are intentionally omitted to keep the app focused on core Flipper Sub-GHz protocols.
+- **117 alphabetical brands / systems** mapped directly from protocol names so you can immediately see which car brand or gate remote uses which modulation (`AM`, `FM`, `AM/FM`) and frequency (`315`, `433.92`, `868`, `300-390 MHz`).
+- Receive-only `rtl_433` weather/sensor protocols and CVE vulnerability tables are intentionally omitted to keep the app focused on core Flipper Sub-GHz car & gate protocols.
 
 ## Features & UI ("Pro-Inspector")
 
@@ -20,12 +30,12 @@ Fullscreen 128x64 interface designed for readability on Flipper Zero:
 
 - **Animated Startup Splash**: Custom 128x64 monochrome keyfob artwork with pulsing TX LED, animated RF carrier waves, live oscilloscope pulse train, and `by limbo` badge (auto-advances after ~2s or skips immediately on `Ok` / D-pad press).
 - **Start Menu** (`7` views with monochrome icons & live counts):
-  - `By Brand (118)` — alphabetical brand index (`Left`/`Right` jumps 8 rows)
+  - `By Brand (117)` — alphabetical brand index (`Left`/`Right` jumps 8 rows)
   - `Search Keyword` — case-insensitive multi-word AND search across protocol name, encoding, RF, code/encryption, frequency, and TX notes (e.g. `kia fm`, `868 aes`)
-  - `Cars & Alarms (99)` — car key fobs and alarms
+  - `Cars & Alarms (95)` — car key fobs and alarms
   - `Gates & Home (43)` — garage, gate, barrier, shutter, doorbell, and home remotes
   - `Filter RF / Band` — instant filter by modulation (`AM (OOK)`, `FM (2-FSK)`, `AM / FM Dual`) or band (`315 MHz`, `433.92 MHz`, `868 MHz`, `Other (300-390)`) with live item counts
-  - `All Protocols (142)` — full list
+  - `All Protocols (138)` — full list
   - `RF & Preset Info` — creator attribution (`limbo`), verified Flipper hopper frequency lists (Standard / Flipper-ARF +434.25 MHz / Doctor FW 9-frequency list), CC1101 & Doctor presets (`AM270`, `AM650`, `FM238`/`Honda1`, `FM12K`/`F4`, `FM476`, Doctor `AM101`/`FM14K`/`FM15k`/`FM20K`), KeeLoq FM gate notes, and verified source repositories
 - **Protocol List**: 5 rows per screen with contrasting right-aligned `[RF Freq]` badges and automatic horizontal marquee scrolling on selected long names.
 - **Detail Inspector**:
@@ -96,4 +106,3 @@ All protocol modulations, encodings, frequencies, hopper tables, presets, and TX
 - [Momentum Firmware](https://github.com/Next-Flip/Momentum-Firmware) (`Next-Flip/Momentum-Firmware`)
 - [FoxFW v2](https://github.com/FoxFW/flipperzero-firmware) (`FoxFW/flipperzero-firmware`) & [FoxFW](https://github.com/SamMichaelINC/FoxFW) (`SamMichaelINC/FoxFW`)
 - [ProtoPirate](https://github.com/RocketGod-git/ProtoPirate) (`RocketGod-git/ProtoPirate`)
-- [Moon-Firmware](https://github.com/limbo111111/Moon-Firmware) (`limbo111111/Moon-Firmware`)

@@ -8,8 +8,7 @@
       "Next-Flip/Momentum-Firmware",
       "FoxFW/flipperzero-firmware (FoxFW v2)",
       "SamMichaelINC/FoxFW",
-      "RocketGod-git/ProtoPirate",
-      "limbo111111/Moon-Firmware"
+      "RocketGod-git/ProtoPirate"
     ]
   },
   "cars": [
@@ -177,7 +176,7 @@
       "name": "MARELLI (Fiat / Lancia)",
       "encoding": "Manchester",
       "rf": "FM",
-      "code": "Rolling Code (80-104 bit saved-frame replay / decoder in ARF/FoxFW/Moon-FW)",
+      "code": "Rolling Code (80-104 bit saved-frame replay / decoder in ARF/FoxFW)",
       "freq": "433.92 MHz",
       "tx": ""
     },
@@ -590,19 +589,19 @@
       "tx": ""
     },
     {
-      "name": "BMW CAS4 (ARF/FoxFW/Moon-FW)",
+      "name": "BMW CAS4 (ARF/FoxFW)",
       "encoding": "PWM / Manchester",
       "rf": "AM",
-      "code": "Rolling Code (64-bit; decode-only ARF/FoxFW2; Moon-FW encoder)",
-      "freq": "315 / 433.92 / 868 MHz (FoxFW/Moon 433)",
+      "code": "Rolling Code (64-bit; decode-only)",
+      "freq": "315 / 433.92 / 868 MHz (FoxFW 433)",
       "tx": ""
     },
     {
-      "name": "Fiat SPA (ARF/FoxFW/Moon-FW)",
+      "name": "Fiat SPA (ARF/FoxFW)",
       "encoding": "Manchester",
       "rf": "AM",
       "code": "Rolling Code (64-bit; encoder)",
-      "freq": "315 / 433.92 MHz (FoxFW/Moon 433)",
+      "freq": "315 / 433.92 MHz (FoxFW 433)",
       "tx": ""
     },
     {
@@ -627,30 +626,6 @@
       "rf": "AM",
       "code": "Rolling Code (decode-only; stub encoder refuses keys)",
       "freq": "314.9 / 315 MHz",
-      "tx": ""
-    },
-    {
-      "name": "Honda KeeLoq (Moon-FW)",
-      "encoding": "PWM (inverted)",
-      "rf": "AM",
-      "code": "KeeLoq (66-bit LSB-first; encoder)",
-      "freq": "315 / 433.92 MHz",
-      "tx": ""
-    },
-    {
-      "name": "Honda HF (Honda/Acura; Moon-FW)",
-      "encoding": "PWM",
-      "rf": "AM",
-      "code": "Rolling Code (88-bit frame; 307.8 MHz / 433 variants; encoder)",
-      "freq": "307.8 / 315 / 433.92 MHz",
-      "tx": ""
-    },
-    {
-      "name": "Honda V3 OOK/KL/FSK (Moon-FW)",
-      "encoding": "PWM / Manchester",
-      "rf": "AM/FM",
-      "code": "OOK 88-bit + KL 66-bit (315/433) + FSK 112-bit (433; Moon-FW encoder)",
-      "freq": "315 / 433.92 MHz",
       "tx": ""
     },
     {
@@ -755,14 +730,6 @@
       "rf": "AM",
       "code": "Rolling Code (96-bit + complement bytes; encoder)",
       "freq": "314.35 MHz (315 band)",
-      "tx": ""
-    },
-    {
-      "name": "VAG V4 (Moon-FW)",
-      "encoding": "Manchester",
-      "rf": "AM",
-      "code": "Rolling Code (80-bit Manchester; encoder)",
-      "freq": "434.4 MHz (433 band)",
       "tx": ""
     },
     {

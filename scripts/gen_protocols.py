@@ -2,7 +2,7 @@
 """Generate flash-resident C protocol tables from data/protocols.json.
 
 Created by limbo. Strictly verified against Flipper Zero Sub-GHz firmware sources:
-  - Flipper-ARF, doctor-firmware, Unleashed, Momentum, FoxFW, ProtoPirate, Moon-Firmware
+  - Flipper-ARF, doctor-firmware, Unleashed, Momentum, FoxFW, ProtoPirate
 Excludes rtl_433 weather/sensor protocols and CVEs.
 Normalizes all strings to 7-bit ASCII for Flipper's u8g2 _tr fonts and validates
 bounds, masks, badges, and zero unwanted references.
@@ -16,7 +16,6 @@ import sys
 
 # Curated alphabetical brand / system keywords matched against protocol names.
 BRAND_KEYWORDS = [
-    ("Acura", "Acura"),
     ("Allstar", "Allstar"),
     ("Alps", "Alps"),
     ("Alutech", "Alutech"),
@@ -184,8 +183,6 @@ def short_freq(freq: str) -> str:
         return "318/315"
     if "310" in freq and "390" not in freq:
         return "310/315"
-    if "307.8" in freq:
-        return "308/433"
 
     flags = freq_flags(freq)
     has315 = bool(flags & (1 << 0))

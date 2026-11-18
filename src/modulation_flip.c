@@ -197,8 +197,8 @@ static const char* const kFilterShortTitles[FilterCount] = {
 
 static const char* const kRfPresetInfoText = "\e#ModulationFlip v1.0\n"
                                              "Created by limbo\n"
-                                             "142 RF protocols\n"
-                                             "99 Car/Alarm + 43 Gate/Home\n"
+                                             "138 RF protocols\n"
+                                             "95 Car/Alarm + 43 Gate/Home\n"
                                              "\n"
                                              "\e#Flipper Hopper Lists\n"
                                              "Std/Momentum/Unleashed/FoxFW:\n"
@@ -223,7 +223,7 @@ static const char* const kRfPresetInfoText = "\e#ModulationFlip v1.0\n"
                                              "\e#Verified Repo Sources\n"
                                              "Flipper-ARF, doctor-firmware,\n"
                                              "Unleashed, Momentum, FoxFW,\n"
-                                             "ProtoPirate, Moon-Firmware\n";
+                                             "ProtoPirate\n";
 
 // --- Filtering Helpers ---
 
@@ -722,7 +722,7 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
 
     // 2. Hero RF + Frequency Card (y=11..31)
     canvas_draw_rframe(canvas, 2, 11, 124, 21, 1);
-    canvas_draw_rbox(canvas, 3, 12, 34, 19, 1);
+    canvas_draw_box(canvas, 3, 12, 34, 19);
     canvas_set_color(canvas, ColorWhite);
     ui_draw_hero_rf(canvas, 3, 12, 34, 19, e->rf_short);
 
@@ -737,16 +737,16 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
     need_scroll |= ui_draw_marquee_top(canvas, 41, 21, 81, e->freq, m->tick);
 
     // 3. Compact Enc + Category Pills (y=33..43)
-    canvas_draw_rframe(canvas, 2, 33, 74, 11, 1);
+    canvas_draw_rframe(canvas, 2, 33, 78, 11, 1);
     char enc_str[40];
     snprintf(enc_str, sizeof(enc_str), "Enc: %s", e->encoding);
-    need_scroll |= ui_draw_marquee_top(canvas, 5, 34, 68, enc_str, m->tick);
+    need_scroll |= ui_draw_marquee_top(canvas, 5, 34, 72, enc_str, m->tick);
     m->needs_scroll = need_scroll;
 
-    canvas_draw_rframe(canvas, 78, 33, 48, 11, 1);
+    canvas_draw_rframe(canvas, 82, 33, 44, 11, 1);
     canvas_draw_str_aligned(
         canvas,
-        102,
+        104,
         34,
         AlignCenter,
         AlignTop,
