@@ -212,6 +212,8 @@ def short_freq(freq: str) -> str:
 
 
 def freq_flags(freq: str) -> int:
+    if "any band" in freq:
+        return (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3)
     flags = 0
     if "315" in freq or "313" in freq:
         flags |= 1 << 0  # FREQ_FLAG_315
@@ -219,7 +221,7 @@ def freq_flags(freq: str) -> int:
         flags |= 1 << 1  # FREQ_FLAG_433
     if "868" in freq:
         flags |= 1 << 2  # FREQ_FLAG_868
-    if "390" in freq or "300-390" in freq or "any band" in freq:
+    if "390" in freq or "300-390" in freq:
         flags |= 1 << 3  # FREQ_FLAG_OTHER
     return flags
 

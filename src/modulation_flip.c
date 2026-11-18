@@ -332,7 +332,13 @@ static size_t
 
 // --- Step/Page Navigation Helper ---
 
-static bool step_list_cursor(size_t* cursor, size_t count, InputEvent* event, size_t page_step) {
+static bool step_list_cursor(
+    size_t* cursor,
+    size_t count,
+    InputEvent* event,
+    size_t page_step,
+    bool* changed) {
+    *changed = false;
     if(count == 0) return false;
     bool is_press = (event->type == InputTypePress);
     bool is_repeat = (event->type == InputTypeRepeat);
@@ -346,6 +352,7 @@ static bool step_list_cursor(size_t* cursor, size_t count, InputEvent* event, si
         } else if(is_press) {
             *cursor = count - 1;
         }
+        *changed = (*cursor != cur);
         return true;
 
     case InputKeyDown:
@@ -354,14 +361,17 @@ static bool step_list_cursor(size_t* cursor, size_t count, InputEvent* event, si
         } else if(is_press) {
             *cursor = 0;
         }
+        *changed = (*cursor != cur);
         return true;
 
     case InputKeyLeft:
         *cursor = (cur > page_step) ? (cur - page_step) : 0;
+        *changed = (*cursor != cur);
         return true;
 
     case InputKeyRight:
         *cursor = (cur + page_step < count) ? (cur + page_step) : (count - 1);
+        *changed = (*cursor != cur);
         return true;
 
     default:
@@ -378,13 +388,15 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
 
     canvas_set_font(canvas, FontPrimary);
     if(m->mode == MenuModeStart) {
-        canvas_draw_str_aligned(canvas, 2, 1, AlignLeft, AlignTop, "ModulationFlip [114]");
+        char hdr[32];
+        snprintf(hdr, sizeof(hdr), "ModulationFlip [%zu]", kProtocolCount);
+        canvas_draw_str_aligned(canvas, 2, 0, AlignLeft, AlignTop, hdr);
     } else if(m->mode == MenuModeBrands) {
         char hdr[32];
         snprintf(hdr, sizeof(hdr), "Select Brand (%zu)", kBrandCount);
-        canvas_draw_str_aligned(canvas, 2, 1, AlignLeft, AlignTop, hdr);
+        canvas_draw_str_aligned(canvas, 2, 0, AlignLeft, AlignTop, hdr);
     } else {
-        canvas_draw_str_aligned(canvas, 2, 1, AlignLeft, AlignTop, "Filter RF / Band");
+        canvas_draw_str_aligned(canvas, 2, 0, AlignLeft, AlignTop, "Filter RF / Band");
     }
     canvas_draw_line(canvas, 0, 11, 127, 11);
 
@@ -405,7 +417,7 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
         bool sel = (idx == m->cursor);
 
         if(sel) {
-            canvas_draw_rbox(canvas, 1, y, 121, 11, 2);
+            canvas_draw_rbox(canvas, 1, y, 122, 11, 2);
             canvas_set_color(canvas, ColorWhite);
         } else {
             canvas_set_color(canvas, ColorBlack);
@@ -427,36 +439,36 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
                 snprintf(count_str, sizeof(count_str), "(%zu)", kProtocolCount);
             }
             size_t count_w = count_str[0] ? (size_t)canvas_string_width(canvas, count_str) + 4 : 0;
-            size_t label_max_w = 104 - count_w;
+            size_t label_max_w = 105 - count_w;
             bool overflow =
-                ui_draw_marquee_top(canvas, 14, y + 2, label_max_w, label, sel ? m->tick : 0);
+                ui_draw_marquee_top(canvas, 14, y + 1, label_max_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
             if(count_str[0]) {
-                canvas_draw_str_aligned(canvas, 119, y + 2, AlignRight, AlignTop, count_str);
+                canvas_draw_str_aligned(canvas, 120, y + 1, AlignRight, AlignTop, count_str);
             }
         } else if(m->mode == MenuModeBrands) {
             label = kBrands[idx].name;
             snprintf(count_str, sizeof(count_str), "(%u)", kBrands[idx].count);
             size_t count_w = (size_t)canvas_string_width(canvas, count_str) + 4;
             bool overflow =
-                ui_draw_marquee_top(canvas, 4, y + 2, 113 - count_w, label, sel ? m->tick : 0);
+                ui_draw_marquee_top(canvas, 4, y + 1, 114 - count_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
-            canvas_draw_str_aligned(canvas, 119, y + 2, AlignRight, AlignTop, count_str);
+            canvas_draw_str_aligned(canvas, 120, y + 1, AlignRight, AlignTop, count_str);
         } else {
             label = kFilterLabels[idx];
             snprintf(count_str, sizeof(count_str), "[%u]", m->filter_counts[idx]);
             size_t count_w = (size_t)canvas_string_width(canvas, count_str) + 4;
             bool overflow =
-                ui_draw_marquee_top(canvas, 4, y + 2, 113 - count_w, label, sel ? m->tick : 0);
+                ui_draw_marquee_top(canvas, 4, y + 1, 114 - count_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
-            canvas_draw_str_aligned(canvas, 119, y + 2, AlignRight, AlignTop, count_str);
+            canvas_draw_str_aligned(canvas, 120, y + 1, AlignRight, AlignTop, count_str);
         }
     }
     m->needs_scroll = need_scroll;
 
     canvas_set_color(canvas, ColorBlack);
     if(m->count > vis) {
-        elements_scrollbar_pos(canvas, 124, 13, 48, m->cursor, m->count);
+        elements_scrollbar_pos(canvas, 128, 13, 48, m->cursor, m->count);
     }
 }
 
@@ -480,17 +492,18 @@ static bool menu_view_input_callback(InputEvent* event, void* context) {
     }
 
     bool consumed = false;
+    bool changed = false;
     with_view_model(
         app->menu_view,
         MenuViewModel * m,
         {
             size_t page_step = (m->mode == MenuModeBrands) ? 8 : 4;
-            if(step_list_cursor(&m->cursor, m->count, event, page_step)) {
+            consumed = step_list_cursor(&m->cursor, m->count, event, page_step, &changed);
+            if(changed) {
                 m->tick = 0;
-                consumed = true;
             }
         },
-        consumed);
+        changed);
 
     return consumed;
 }
@@ -503,7 +516,7 @@ static void list_view_draw_callback(Canvas* canvas, void* _model) {
     canvas_set_color(canvas, ColorBlack);
 
     canvas_set_font(canvas, FontPrimary);
-    ui_draw_marquee_top(canvas, 2, 1, 124, m->title, 0);
+    ui_draw_marquee_top(canvas, 2, 0, 124, m->title, 0);
     canvas_draw_line(canvas, 0, 11, 127, 11);
 
     const size_t vis = 5;
@@ -526,18 +539,17 @@ static void list_view_draw_callback(Canvas* canvas, void* _model) {
         char badge[20];
         snprintf(badge, sizeof(badge), "%s %s", e->rf_short, e->freq_short);
         size_t badge_w = (size_t)canvas_string_width(canvas, badge) + 4;
-        int32_t badge_x = 120 - (int32_t)badge_w;
+        int32_t badge_x = 121 - (int32_t)badge_w;
 
         if(sel) {
-            canvas_draw_rbox(canvas, 1, y, 120, 10, 1);
+            canvas_draw_rbox(canvas, 1, y, 122, 10, 1);
             canvas_set_color(canvas, ColorWhite);
         } else {
             canvas_set_color(canvas, ColorBlack);
         }
 
         size_t name_max_w = (badge_x > 6) ? (size_t)(badge_x - 6) : 16;
-        bool overflow =
-            ui_draw_marquee_top(canvas, 3, y + 1, name_max_w, e->name, sel ? m->tick : 0);
+        bool overflow = ui_draw_marquee_top(canvas, 3, y, name_max_w, e->name, sel ? m->tick : 0);
         if(sel) need_scroll |= overflow;
 
         if(sel) {
@@ -545,17 +557,17 @@ static void list_view_draw_callback(Canvas* canvas, void* _model) {
             canvas_set_color(canvas, ColorWhite);
             canvas_draw_rbox(canvas, badge_x, y, badge_w, 9, 1);
             canvas_set_color(canvas, ColorBlack);
-            canvas_draw_str_aligned(canvas, badge_x + 2, y + 1, AlignLeft, AlignTop, badge);
+            canvas_draw_str_aligned(canvas, badge_x + 2, y, AlignLeft, AlignTop, badge);
         } else {
             canvas_draw_rframe(canvas, badge_x, y, badge_w, 9, 1);
-            canvas_draw_str_aligned(canvas, badge_x + 2, y + 1, AlignLeft, AlignTop, badge);
+            canvas_draw_str_aligned(canvas, badge_x + 2, y, AlignLeft, AlignTop, badge);
         }
     }
     m->needs_scroll = need_scroll;
 
     canvas_set_color(canvas, ColorBlack);
     if(m->count > vis) {
-        elements_scrollbar_pos(canvas, 124, 12, 50, m->cursor, m->count);
+        elements_scrollbar_pos(canvas, 128, 12, 50, m->cursor, m->count);
     }
 }
 
@@ -579,16 +591,17 @@ static bool list_view_input_callback(InputEvent* event, void* context) {
     }
 
     bool consumed = false;
+    bool changed = false;
     with_view_model(
         app->list_view,
         ProtoListModel * m,
         {
-            if(step_list_cursor(&m->cursor, m->count, event, 5)) {
+            consumed = step_list_cursor(&m->cursor, m->count, event, 5, &changed);
+            if(changed) {
                 m->tick = 0;
-                consumed = true;
             }
         },
-        consumed);
+        changed);
 
     return consumed;
 }
@@ -636,7 +649,7 @@ static size_t wrap_and_maybe_draw(
             }
             // Emit completed line
             if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-                int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
+                int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
                 canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
             }
             line_idx++;
@@ -657,7 +670,7 @@ static size_t wrap_and_maybe_draw(
             }
             if(take < rem) {
                 if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-                    int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
+                    int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
                     canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
                 }
                 line_idx++;
@@ -673,7 +686,7 @@ static size_t wrap_and_maybe_draw(
 
     if(cur_len > 0) {
         if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-            int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
+            int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
             canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
         }
         line_idx++;
@@ -694,7 +707,7 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
 
     // 1. Header title
     canvas_set_font(canvas, FontPrimary);
-    need_scroll |= ui_draw_marquee_top(canvas, 2, 1, 124, e->name, m->tick);
+    need_scroll |= ui_draw_marquee_top(canvas, 2, 0, 124, e->name, m->tick);
 
     // 2. Hero RF + Frequency Card (y=11..31)
     canvas_draw_rframe(canvas, 2, 11, 124, 21, 1);
@@ -710,25 +723,25 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
     snprintf(pos_str, sizeof(pos_str), "%zu/%zu", m->list_pos + 1, m->list_total);
     canvas_draw_str_aligned(canvas, 122, 13, AlignRight, AlignTop, pos_str);
 
-    need_scroll |= ui_draw_marquee_top(canvas, 41, 22, 81, e->freq, m->tick);
+    need_scroll |= ui_draw_marquee_top(canvas, 41, 21, 81, e->freq, m->tick);
 
     // 3. Compact Enc + Category Pills (y=33..43)
     canvas_draw_rframe(canvas, 2, 33, 74, 11, 1);
     char enc_str[40];
     snprintf(enc_str, sizeof(enc_str), "Enc: %s", e->encoding);
-    need_scroll |= ui_draw_marquee_top(canvas, 5, 35, 68, enc_str, m->tick);
+    need_scroll |= ui_draw_marquee_top(canvas, 5, 34, 68, enc_str, m->tick);
     m->needs_scroll = need_scroll;
 
     canvas_draw_rframe(canvas, 78, 33, 48, 11, 1);
     canvas_draw_str_aligned(
         canvas,
         102,
-        35,
+        34,
         AlignCenter,
         AlignTop,
         (e->category == ProtoCategoryCar) ? "Car/Key" : "Gate/RF");
 
-    // 4. Wrapped scrollable detail body (y=46..63)
+    // 4. Wrapped scrollable detail body (y=45..63)
     size_t total_lines = wrap_and_maybe_draw(canvas, m->detail_text, DETAIL_MAX_W, 0, false);
     uint8_t max_scroll = (total_lines > 2) ? (uint8_t)(total_lines - 2) : 0;
     m->max_scroll = max_scroll;
@@ -739,7 +752,7 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
     wrap_and_maybe_draw(canvas, m->detail_text, DETAIL_MAX_W, m->scroll, true);
 
     if(max_scroll > 0) {
-        elements_scrollbar_pos(canvas, 125, 46, 17, m->scroll, (size_t)max_scroll + 1);
+        elements_scrollbar_pos(canvas, 128, 45, 19, m->scroll, (size_t)max_scroll + 1);
     }
 }
 
@@ -779,6 +792,16 @@ static bool detail_view_input_callback(InputEvent* event, void* context) {
     return false;
 }
 
+static size_t
+    append_str_bounded(char* dst, size_t dst_sz, size_t pos, const char* prefix, const char* val) {
+    if(pos >= dst_sz - 1) return dst_sz - 1;
+    size_t rem = dst_sz - pos;
+    int w = snprintf(dst + pos, rem, "%s%s", prefix, val);
+    if(w <= 0) return pos;
+    if((size_t)w >= rem) return dst_sz - 1;
+    return pos + (size_t)w;
+}
+
 static void populate_detail_model(ModulationFlipApp* app) {
     if(app->list_count == 0) return;
     if(app->list_cursor >= app->list_count) {
@@ -804,27 +827,23 @@ static void populate_detail_model(ModulationFlipApp* app) {
                 (strcmp(e->rf, "AM") != 0 && strcmp(e->rf, "FM") != 0 && strlen(e->rf) > 5);
 
             if(need_rf_detail) {
-                int w = snprintf(m->detail_text + pos, DETAIL_TEXT_LEN - pos, "RF: %s | ", e->rf);
-                if(w > 0 && pos + (size_t)w < DETAIL_TEXT_LEN) pos += (size_t)w;
+                pos = append_str_bounded(m->detail_text, DETAIL_TEXT_LEN, pos, "RF: ", e->rf);
+                pos = append_str_bounded(m->detail_text, DETAIL_TEXT_LEN, pos, " | ", "");
             }
 
-            {
-                int w = snprintf(m->detail_text + pos, DETAIL_TEXT_LEN - pos, "%s", e->code);
-                if(w > 0 && pos + (size_t)w < DETAIL_TEXT_LEN) pos += (size_t)w;
-            }
+            pos = append_str_bounded(m->detail_text, DETAIL_TEXT_LEN, pos, "", e->code);
 
             if(e->tx[0] != '\0') {
-                int w = snprintf(m->detail_text + pos, DETAIL_TEXT_LEN - pos, " | TX: %s", e->tx);
-                if(w > 0 && pos + (size_t)w < DETAIL_TEXT_LEN) pos += (size_t)w;
+                pos = append_str_bounded(m->detail_text, DETAIL_TEXT_LEN, pos, " | TX: ", e->tx);
             }
 
             if(strcmp(e->rf, "AM/FM") == 0) {
-                int w = snprintf(m->detail_text + pos, DETAIL_TEXT_LEN - pos, " | RF: AM/FM");
-                if(w > 0 && pos + (size_t)w < DETAIL_TEXT_LEN) pos += (size_t)w;
+                pos = append_str_bounded(m->detail_text, DETAIL_TEXT_LEN, pos, " | RF: ", "AM/FM");
             }
 
             if(strlen(e->encoding) > 10) {
-                snprintf(m->detail_text + pos, DETAIL_TEXT_LEN - pos, " | Enc: %s", e->encoding);
+                pos = append_str_bounded(
+                    m->detail_text, DETAIL_TEXT_LEN, pos, " | Enc: ", e->encoding);
             }
         },
         true);
@@ -1187,7 +1206,7 @@ static void tick_event_callback(void* context) {
     ModulationFlipApp* app = context;
     uint32_t scene = scene_manager_get_current_scene(app->scene_manager);
 
-    if(scene == SceneBrands) {
+    if(scene == SceneStart || scene == SceneBrands || scene == SceneFilter) {
         bool do_update = false;
         with_view_model(
             app->menu_view,
