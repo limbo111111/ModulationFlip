@@ -421,14 +421,14 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
     }
 
     bool need_scroll = false;
-    canvas_set_font(canvas, FontSecondary);
+    canvas_set_font(canvas, FontPrimary);
     for(size_t r = 0; r < vis && (start + r) < m->count; r++) {
         size_t idx = start + r;
-        int32_t y = 13 + (int32_t)(r * 12);
+        int32_t y = 13 + (int32_t)(r * 13);
         bool sel = (idx == m->cursor);
 
         if(sel) {
-            canvas_draw_rbox(canvas, 1, y, 122, 11, 2);
+            canvas_draw_rbox(canvas, 1, y, 122, 12, 2);
             canvas_set_color(canvas, ColorWhite);
         } else {
             canvas_set_color(canvas, ColorBlack);
@@ -450,7 +450,7 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
                 snprintf(count_str, sizeof(count_str), "(%zu)", kProtocolCount);
             }
             size_t count_w = count_str[0] ? (size_t)canvas_string_width(canvas, count_str) + 4 : 0;
-            size_t label_max_w = 105 - count_w;
+            size_t label_max_w = 106 - count_w;
             bool overflow =
                 ui_draw_marquee_top(canvas, 14, y + 1, label_max_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
@@ -462,15 +462,15 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
             snprintf(count_str, sizeof(count_str), "(%u)", kBrands[idx].count);
             size_t count_w = (size_t)canvas_string_width(canvas, count_str) + 4;
             bool overflow =
-                ui_draw_marquee_top(canvas, 4, y + 1, 114 - count_w, label, sel ? m->tick : 0);
+                ui_draw_marquee_top(canvas, 4, y + 1, 116 - count_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
             canvas_draw_str_aligned(canvas, 120, y + 1, AlignRight, AlignTop, count_str);
         } else {
             label = kFilterLabels[idx];
-            snprintf(count_str, sizeof(count_str), "[%u]", m->filter_counts[idx]);
+            snprintf(count_str, sizeof(count_str), "(%u)", m->filter_counts[idx]);
             size_t count_w = (size_t)canvas_string_width(canvas, count_str) + 4;
             bool overflow =
-                ui_draw_marquee_top(canvas, 4, y + 1, 114 - count_w, label, sel ? m->tick : 0);
+                ui_draw_marquee_top(canvas, 4, y + 1, 116 - count_w, label, sel ? m->tick : 0);
             if(sel) need_scroll |= overflow;
             canvas_draw_str_aligned(canvas, 120, y + 1, AlignRight, AlignTop, count_str);
         }
@@ -479,7 +479,7 @@ static void menu_view_draw_callback(Canvas* canvas, void* _model) {
 
     canvas_set_color(canvas, ColorBlack);
     if(m->count > vis) {
-        elements_scrollbar_pos(canvas, 128, 13, 48, m->cursor, m->count);
+        elements_scrollbar_pos(canvas, 128, 13, 50, m->cursor, m->count);
     }
 }
 
@@ -519,7 +519,7 @@ static bool menu_view_input_callback(InputEvent* event, void* context) {
     return consumed;
 }
 
-// --- ProtoListView (Kombi B 5-row List + [RF Freq] Badges) ---
+// --- ProtoListView (2 Spacious 24px Cards: Bold Name + RF Pill & Full Frequency) ---
 
 static void list_view_draw_callback(Canvas* canvas, void* _model) {
     ProtoListModel* m = _model;
@@ -530,55 +530,72 @@ static void list_view_draw_callback(Canvas* canvas, void* _model) {
     ui_draw_marquee_top(canvas, 2, 0, 124, m->title, 0);
     canvas_draw_line(canvas, 0, 11, 127, 11);
 
-    const size_t vis = 5;
+    const size_t vis = 2;
     size_t start = 0;
-    if(m->count > vis && m->cursor > 2) {
-        start = m->cursor - 2;
+    if(m->count > vis && m->cursor > 0) {
+        start = m->cursor;
         if(start > m->count - vis) {
             start = m->count - vis;
         }
     }
 
     bool need_scroll = false;
-    canvas_set_font(canvas, FontSecondary);
     for(size_t r = 0; r < vis && (start + r) < m->count; r++) {
         size_t idx = start + r;
         const ProtocolEntry* e = &kProtocols[m->indices[idx]];
-        int32_t y = 12 + (int32_t)(r * 10);
+        int32_t y = (r == 0) ? 13 : 40;
         bool sel = (idx == m->cursor);
 
-        char badge[20];
-        snprintf(badge, sizeof(badge), "%s %s", e->rf_short, e->freq_short);
-        size_t badge_w = (size_t)canvas_string_width(canvas, badge) + 4;
-        int32_t badge_x = 121 - (int32_t)badge_w;
-
         if(sel) {
-            canvas_draw_rbox(canvas, 1, y, 122, 10, 1);
+            canvas_set_color(canvas, ColorBlack);
+            canvas_draw_rbox(canvas, 1, y, 122, 24, 2);
             canvas_set_color(canvas, ColorWhite);
         } else {
             canvas_set_color(canvas, ColorBlack);
         }
 
-        size_t name_max_w = (badge_x > 6) ? (size_t)(badge_x - 6) : 16;
-        bool overflow = ui_draw_marquee_top(canvas, 3, y, name_max_w, e->name, sel ? m->tick : 0);
+        // Line 1: Bold Car Brand / Gate Protocol Name across full 116 px
+        canvas_set_font(canvas, FontPrimary);
+        bool overflow = ui_draw_marquee_top(canvas, 4, y + 2, 116, e->name, sel ? m->tick : 0);
         if(sel) need_scroll |= overflow;
 
+        // Line 2: High-contrast 9px RF Modulation Pill + Full Frequency
+        canvas_set_font(canvas, FontSecondary);
+        size_t pill_w = (size_t)canvas_string_width(canvas, e->rf_short) + 6;
+        int32_t pill_y = y + 13;
+
         if(sel) {
-            // White pill inside selected row with black text for sharp badge contrast
             canvas_set_color(canvas, ColorWhite);
-            canvas_draw_rbox(canvas, badge_x, y, badge_w, 9, 1);
+            canvas_draw_rbox(canvas, 4, pill_y, pill_w, 9, 1);
             canvas_set_color(canvas, ColorBlack);
-            canvas_draw_str_aligned(canvas, badge_x + 2, y, AlignLeft, AlignTop, badge);
+            canvas_draw_str_aligned(canvas, 7, pill_y + 1, AlignLeft, AlignTop, e->rf_short);
+            canvas_set_color(canvas, ColorWhite);
         } else {
-            canvas_draw_rframe(canvas, badge_x, y, badge_w, 9, 1);
-            canvas_draw_str_aligned(canvas, badge_x + 2, y, AlignLeft, AlignTop, badge);
+            canvas_set_color(canvas, ColorBlack);
+            canvas_draw_rbox(canvas, 4, pill_y, pill_w, 9, 1);
+            canvas_set_color(canvas, ColorWhite);
+            canvas_draw_str_aligned(canvas, 7, pill_y + 1, AlignLeft, AlignTop, e->rf_short);
+            canvas_set_color(canvas, ColorBlack);
+        }
+
+        int32_t freq_x = 4 + (int32_t)pill_w + 5;
+        size_t freq_max_w = (size_t)(120 - freq_x);
+        bool freq_ov = ui_draw_marquee_top(
+            canvas, freq_x, pill_y + 1, freq_max_w, e->freq, sel ? m->tick : 0);
+        if(sel) need_scroll |= freq_ov;
+
+        if(r == 0 && (start + 1) < m->count) {
+            canvas_set_color(canvas, ColorBlack);
+            for(int32_t dx = 3; dx <= 119; dx += 4) {
+                canvas_draw_dot(canvas, dx, 38);
+            }
         }
     }
     m->needs_scroll = need_scroll;
 
     canvas_set_color(canvas, ColorBlack);
     if(m->count > vis) {
-        elements_scrollbar_pos(canvas, 128, 12, 50, m->cursor, m->count);
+        elements_scrollbar_pos(canvas, 128, 13, 50, m->cursor, m->count);
     }
 }
 
@@ -607,7 +624,7 @@ static bool list_view_input_callback(InputEvent* event, void* context) {
         app->list_view,
         ProtoListModel * m,
         {
-            consumed = step_list_cursor(&m->cursor, m->count, event, 5, &changed);
+            consumed = step_list_cursor(&m->cursor, m->count, event, 4, &changed);
             if(changed) {
                 m->tick = 0;
             }
@@ -660,7 +677,7 @@ static size_t wrap_and_maybe_draw(
             }
             // Emit completed line
             if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-                int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
+                int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
                 canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
             }
             line_idx++;
@@ -681,7 +698,7 @@ static size_t wrap_and_maybe_draw(
             }
             if(take < rem) {
                 if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-                    int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
+                    int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
                     canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
                 }
                 line_idx++;
@@ -697,7 +714,7 @@ static size_t wrap_and_maybe_draw(
 
     if(cur_len > 0) {
         if(draw && line_idx >= scroll_off && line_idx < scroll_off + 2) {
-            int32_t ly = 45 + (int32_t)((line_idx - scroll_off) * 9);
+            int32_t ly = 46 + (int32_t)((line_idx - scroll_off) * 9);
             canvas_draw_str_aligned(canvas, 2, ly, AlignLeft, AlignTop, cur);
         }
         line_idx++;
@@ -720,11 +737,11 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
     canvas_set_font(canvas, FontPrimary);
     need_scroll |= ui_draw_marquee_top(canvas, 2, 0, 124, e->name, m->tick);
 
-    // 2. Hero RF + Frequency Card (y=11..31)
-    canvas_draw_rframe(canvas, 2, 11, 124, 21, 1);
-    canvas_draw_box(canvas, 3, 12, 34, 19);
+    // 2. Hero RF + Frequency Card (y=11..30)
+    canvas_draw_rframe(canvas, 2, 11, 124, 20, 1);
+    canvas_draw_box(canvas, 3, 12, 34, 18);
     canvas_set_color(canvas, ColorWhite);
-    ui_draw_hero_rf(canvas, 3, 12, 34, 19, e->rf_short);
+    ui_draw_hero_rf(canvas, 3, 12, 34, 18, e->rf_short);
 
     canvas_set_color(canvas, ColorBlack);
     canvas_set_font(canvas, FontSecondary);
@@ -736,14 +753,14 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
 
     need_scroll |= ui_draw_marquee_top(canvas, 41, 21, 81, e->freq, m->tick);
 
-    // 3. Compact Enc + Category Pills (y=33..43)
-    canvas_draw_rframe(canvas, 2, 33, 78, 11, 1);
+    // 3. Compact Enc + Category Pills (y=32..43)
+    canvas_draw_rframe(canvas, 2, 32, 78, 12, 1);
     char enc_str[40];
     snprintf(enc_str, sizeof(enc_str), "Enc: %s", e->encoding);
     need_scroll |= ui_draw_marquee_top(canvas, 5, 34, 72, enc_str, m->tick);
     m->needs_scroll = need_scroll;
 
-    canvas_draw_rframe(canvas, 82, 33, 44, 11, 1);
+    canvas_draw_rframe(canvas, 82, 32, 44, 12, 1);
     canvas_draw_str_aligned(
         canvas,
         104,
@@ -752,7 +769,7 @@ static void detail_view_draw_callback(Canvas* canvas, void* _model) {
         AlignTop,
         (e->category == ProtoCategoryCar) ? "Car/Key" : "Gate/RF");
 
-    // 4. Wrapped scrollable detail body (y=45..63)
+    // 4. Wrapped scrollable detail body (y=46..63)
     size_t total_lines = wrap_and_maybe_draw(canvas, m->detail_text, DETAIL_MAX_W, 0, false);
     uint8_t max_scroll = (total_lines > 2) ? (uint8_t)(total_lines - 2) : 0;
     m->max_scroll = max_scroll;

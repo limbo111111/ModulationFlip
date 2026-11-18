@@ -823,7 +823,7 @@
       "tx": "next code"
     },
     {
-      "name": "Hoermann BiSecur (Momentum / FoxFW)",
+      "name": "Hoermann BiSecur",
       "encoding": "Manchester",
       "rf": "FM",
       "code": "AES-128 (frame CRC-8 checked)",
@@ -831,10 +831,10 @@
       "tx": "re-sends stored frame (Momentum); decode-only (FoxFW)"
     },
     {
-      "name": "Cardin S508 (FoxFW / RM)",
+      "name": "Cardin S508",
       "encoding": "Manchester",
       "rf": "FM",
-      "code": "AES-128",
+      "code": "AES-128 (FoxFW)",
       "freq": "868.35 MHz",
       "tx": "decode only"
     },
@@ -999,18 +999,18 @@
       "tx": "yes, any button"
     },
     {
-      "name": "Freezer, Faac TM, Proteco (Unleashed)",
+      "name": "Freezer, Faac TM, Proteco",
       "encoding": "PWM",
       "rf": "AM",
-      "code": "Fixed Code (Freezer confirmed by repeat)",
+      "code": "Fixed Code (Freezer confirmed by repeat; Unleashed)",
       "freq": "433.92 MHz (FAAC TM also 868)",
       "tx": "yes"
     },
     {
-      "name": "BelKorn (Unleashed)",
+      "name": "BelKorn",
       "encoding": "PWM",
       "rf": "AM",
-      "code": "Rolling Code (118-bit)",
+      "code": "Rolling Code (118-bit; Unleashed)",
       "freq": "433.92 MHz",
       "tx": "next code"
     },

@@ -11,9 +11,9 @@ ModulationFlip helps you quickly look up which RF modulation (`AM`, `FM`, `AM/FM
 | Startup Splash | Start Menu |
 | :---: | :---: |
 | ![Startup Splash](docs/screenshots/01_splash.png) | ![Start Menu](docs/screenshots/02_start_menu.png) |
-| **RF Filter / Band Menu** | **Cars & Alarms (`[RF Freq]` Badges)** |
+| **RF Filter / Band Menu** | **Cars & Alarms (`Mod + Freq` Cards)** |
 | ![Filter RF and Band](docs/screenshots/03_filter_menu.png) | ![Cars and Alarms List](docs/screenshots/04_cars_list.png) |
-| **Gates & Home (`[RF Freq]` Badges)** | **Detail Inspector** |
+| **Gates & Home (`Mod + Freq` Cards)** | **Detail Inspector** |
 | ![Gates and Home List](docs/screenshots/05_gates_list.png) | ![Detail Inspector](docs/screenshots/06_detail_inspector.png) |
 
 ## Dataset Scope
@@ -26,10 +26,10 @@ ModulationFlip helps you quickly look up which RF modulation (`AM`, `FM`, `AM/FM
 
 ## Features & UI ("Pro-Inspector")
 
-Fullscreen 128x64 interface designed for readability on Flipper Zero:
+Fullscreen 128x64 interface designed for effortless readability on Flipper Zero:
 
 - **Animated Startup Splash**: Custom 128x64 monochrome keyfob artwork with pulsing TX LED, animated RF carrier waves, live oscilloscope pulse train, and `by limbo` badge (auto-advances after ~2s or skips immediately on `Ok` / D-pad press).
-- **Start Menu** (`7` views with monochrome icons & live counts):
+- **Start Menu** (`7` bold `FontPrimary` views with monochrome icons & live counts):
   - `By Brand (117)` — alphabetical brand index (`Left`/`Right` jumps 8 rows)
   - `Search Keyword` — case-insensitive multi-word AND search across protocol name, encoding, RF, code/encryption, frequency, and TX notes (e.g. `kia fm`, `868 aes`)
   - `Cars & Alarms (95)` — car key fobs and alarms
@@ -37,7 +37,7 @@ Fullscreen 128x64 interface designed for readability on Flipper Zero:
   - `Filter RF / Band` — instant filter by modulation (`AM (OOK)`, `FM (2-FSK)`, `AM / FM Dual`) or band (`315 MHz`, `433.92 MHz`, `868 MHz`, `Other (300-390)`) with live item counts
   - `All Protocols (138)` — full list
   - `RF & Preset Info` — creator attribution (`limbo`), verified Flipper hopper frequency lists (Standard / Flipper-ARF +434.25 MHz / Doctor FW 9-frequency list), CC1101 & Doctor presets (`AM270`, `AM650`, `FM238`/`Honda1`, `FM12K`/`F4`, `FM476`, Doctor `AM101`/`FM14K`/`FM15k`/`FM20K`), KeeLoq FM gate notes, and verified source repositories
-- **Protocol List**: 5 rows per screen with contrasting right-aligned `[RF Freq]` badges and automatic horizontal marquee scrolling on selected long names.
+- **Protocol List**: 2 spacious 2-line cards per screen featuring bold `FontPrimary` brand/protocol titles, contrasting `AM` / `FM` / `A/F` modulation pills, full frequency display, dotted card separators, and automatic horizontal marquee scrolling on selected long entries.
 - **Detail Inspector**:
   - Header title with marquee scrolling
   - **2x Hero RF Card** (`AM`, `FM`, `A/F`, or centered `A/F*`) alongside exact `FREQ:` list and `X/Y` list position
@@ -54,7 +54,7 @@ Fullscreen 128x64 interface designed for readability on Flipper Zero:
 | Menus / Brands / Filter | `Up` / `Down` | Move cursor |
 | Menus / Brands / Filter | `Left` / `Right` | Jump page (`8` rows in Brands, `4` otherwise) |
 | Menus / Proto List | `Ok` | Open selection |
-| Protocol List | `Left` / `Right` | Jump `5` rows |
+| Protocol List | `Left` / `Right` | Jump `4` rows (`2` screens) |
 | Detail Inspector | `Up` / `Down` | Scroll full details |
 | Detail Inspector | `Left` / `Right` | Previous / Next protocol in current list |
 | Any Screen | `Back` | Return / Exit app |
