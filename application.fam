@@ -8,7 +8,7 @@ App(
     fap_version="1.0",
     fap_icon="modulation_flip.png",
     fap_description="RF modulation, encoding & frequency reference for car and gate protocols",
-    fap_author="limbo111111",
+    fap_author="limbo",
     fap_weburl="https://github.com/limbo111111/ModulationFlip",
     sources=["src/*.c"],
 )

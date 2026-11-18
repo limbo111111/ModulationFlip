@@ -1,0 +1,1155 @@
+{
+  "metadata": {
+    "author": "limbo",
+    "sources": [
+      "D4C1-Labs/Flipper-ARF",
+      "thedoctorz/doctor-firmware",
+      "DarkFlippers/unleashed-firmware",
+      "Next-Flip/Momentum-Firmware",
+      "FoxFW/flipperzero-firmware (FoxFW v2)",
+      "SamMichaelINC/FoxFW",
+      "RocketGod-git/ProtoPirate",
+      "limbo111111/Moon-Firmware"
+    ]
+  },
+  "cars": [
+    {
+      "name": "Kia V0 / Suzuki V0 / Honda V0 / Mitsubishi V0 (61-bit)",
+      "encoding": "PWM",
+      "rf": "AM/FM (Doctor/PP FM)",
+      "code": "Rolling Code (CRC8; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Kia V1",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (CRC4; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Kia V2",
+      "encoding": "Manchester",
+      "rf": "AM (FoxFW v1 / PP docs FM)",
+      "code": "Rolling Code (CRC4; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Kia V3 / Kia V4",
+      "encoding": "PWM",
+      "rf": "FM (FoxFW v1 AM/FM)",
+      "code": "KeeLoq (KIA key check; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Kia V5",
+      "encoding": "Manchester / PWM",
+      "rf": "FM",
+      "code": "Rolling Code (mixer; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Kia V6",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "AES-128 (CRC8; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz (FoxFW2 433)",
+      "tx": ""
+    },
+    {
+      "name": "Kia V7",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (CRC8; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz (FoxFW1 433)",
+      "tx": ""
+    },
+    {
+      "name": "Ford V0",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (7-bit matrix CRC; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Ford V1",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (descramble + CRC16; F4/FM12K route; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Ford V2",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (16-bit counter; F4/FM12K route; encoder: counter + 1)",
+      "freq": "315 / 433.92 / 434.25 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Ford V3 (EU + US)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (F4 route; decode-only ARF/Doctor/PP; FoxFW Send)",
+      "freq": "315 / 433.92 / 434.25 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Chrysler V0 (Dodge/Jeep)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (seed-XOR + checksum; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda Static",
+      "encoding": "PWM / Manchester",
+      "rf": "FM",
+      "code": "Fixed Code + checksum (Honda1 / FM238 route; encoder)",
+      "freq": "315 / 433.65 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V1",
+      "encoding": "PWM / Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (check nibble / CRC4; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V5 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (CRC-8; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Toyota (Lexus)",
+      "encoding": "Bi-phase (diff. Manchester)",
+      "rf": "AM",
+      "code": "Rolling Code (7-bit counter masks; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V2 (formerly \"Land Rover V0\")",
+      "encoding": "Diff. Manchester / PWM",
+      "rf": "FM",
+      "code": "Rolling Code (3-bit check; F4 route; encoder)",
+      "freq": "315 / 433.92 MHz (Land Rover V0 433)",
+      "tx": ""
+    },
+    {
+      "name": "Fiat V0",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (encoder / static emu)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Fiat V1 (Magneti Marelli BSI)",
+      "encoding": "Manchester",
+      "rf": "AM/FM (ARF AM/FM; others AM)",
+      "code": "HITAG2 (9 keys + ARF heuristics + saved/recovered keys -> fresh frame; else replay)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Fiat V2 (FCA: Fiat/Chrysler/Jeep)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (HITAG2 forward-encode with saved key, else replay)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "MARELLI (Fiat / Lancia)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (80-104 bit saved-frame replay / decoder in ARF/FoxFW/Moon-FW)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Renault V0",
+      "encoding": "Manchester",
+      "rf": "AM (Doctor AM/FM)",
+      "code": "Rolling Code (encoder / replay)",
+      "freq": "315 / 433.92 / 868.35 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Renault V1",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "HITAG2 (serial seed auto-recovered or saved key -> fresh frame; else replay)",
+      "freq": "315 / 433.92 / 868.35 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Renault V1 (ARF Type Table)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (ARF types 0x04/0x0C/0x1A/0x3B/0x3F; replay only)",
+      "freq": "315 / 433.92 / 868.35 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mazda V0",
+      "encoding": "Manchester",
+      "rf": "AM/FM (ARF/FoxFW FM)",
+      "code": "XOR whitening + checksum (encoder)",
+      "freq": "315 / 433.92 MHz (FoxFW 433)",
+      "tx": ""
+    },
+    {
+      "name": "Mazda Siemens",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Siemens XOR/interleave (encoder)",
+      "freq": "315 / 433.92 MHz (FoxFW 433)",
+      "tx": ""
+    },
+    {
+      "name": "Mazda V2",
+      "encoding": "Diff. Manchester",
+      "rf": "AM/FM (FoxFW2 AM)",
+      "code": "Rolling Code (table-driven next code ARF/Doctor; decode-only FoxFW2)",
+      "freq": "315 / 433.92 MHz (FoxFW2 433/315)",
+      "tx": ""
+    },
+    {
+      "name": "Mitsubishi V0 (96-bit)",
+      "encoding": "PWM",
+      "rf": "FM",
+      "code": "Bit Negation + XOR (replay encoder)",
+      "freq": "315 / 433.92 / 868.35 MHz",
+      "tx": ""
+    },
+    {
+      "name": "BMW",
+      "encoding": "Manchester / PWM",
+      "rf": "AM",
+      "code": "Rolling Code (replay / encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mercedes V0",
+      "encoding": "Manchester / PWM",
+      "rf": "FM",
+      "code": "Rolling Code (replay / encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mercedes V1",
+      "encoding": "Manchester / PWM",
+      "rf": "FM",
+      "code": "Rolling Code (replay / encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Opel V1",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "XTEA (decode-only)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "GM (Chevrolet/Buick/GMC/Cadillac)",
+      "encoding": "PPM",
+      "rf": "AM",
+      "code": "Rolling Code (encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Datsun Lada",
+      "encoding": "Manchester / PWM",
+      "rf": "FM",
+      "code": "HITAG2-family (88-bit, 14-bit counter; Doctor FW encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "VAG Polo (VW Polo 5 / Atlas 2020; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Chevrolet V0 (GM/Buick/GMC/Holden; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only)",
+      "freq": "315 / 433.92 / 434 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Tesla Charge (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Fixed Code (FoxFW encoder: 5 copies)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Hyundai/Kia RIO (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code, 16-bit checksum (button mask + checksum encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "SantaFe 13-16 (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code, CRC-8 (button restamp + CRC encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Hitag2 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "PCF7946/7947 RKE frame, XOR check (decode-only)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Nidec RKE (Honda OEM; FoxFW)",
+      "encoding": "PWM",
+      "rf": "FM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "313.8 MHz (315 band)",
+      "tx": ""
+    },
+    {
+      "name": "Renault/xHorse V4 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Clear 8-bit counter, XOR == 0xFF check (88-bit; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Fiat Ducato V0 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code, 7-bit CRC field (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Renault V2 (Clio 3; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code, 82-bit identify-only (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Opel V0 (Opel/GM; FoxFW)",
+      "encoding": "Burst width",
+      "rf": "AM",
+      "code": "Rolling Code (~1200 Hz bursts; decode-only; stub encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V4 (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code, inverse-byte check (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V7 (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code, 88-bit XOR checksum (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V9 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code, 112-bit XOR checksum (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V2 & V3 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (148-bit V2 / 120-bit V3 CRC; encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V10 (V2H4; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (96-bit, 24-bit inv counter; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V6 (FoxFW)",
+      "encoding": "Manchester / Trit (2-path)",
+      "rf": "AM/FM",
+      "code": "Rolling Code (434 MHz FSK Manchester or 313 MHz 3-level trit; no CRC; decode-only)",
+      "freq": "313 / 315 / 433.92 / 434 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mitsubishi V1 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (96-bit, 0xE0 fix byte; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "LDV / Maxus V0 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (250/500 us; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Lexus V0 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code, complement-verified (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mazda V1 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (71-bit 0xEC sync; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Nissan V0 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Toyota (Prius 2006 / Tundra; FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (KeeLoq layout; button whitelist; FoxFW2 encoder / ARF decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "BMW V2 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "BMW / Mini V3 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (0xCC + 64-bit 2-FSK; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Audi V3 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "Rolling Code (2-FSK half-bit demod; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "BMW CAS3 (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "AES rolling code (FoxFW replay encoder)",
+      "freq": "315 / 433.92 / 868 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Porsche Cayenne (ARF \"Porsche AG\")",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "VAG rolling register (encoder)",
+      "freq": "315 / 433.92 / 868.35 MHz (FoxFW 433/868)",
+      "tx": ""
+    },
+    {
+      "name": "Subaru",
+      "encoding": "PWM / PPM",
+      "rf": "AM/FM (Doctor/PP AM)",
+      "code": "Rolling Code (encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "VAG (VW/Audi/Seat/Skoda)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "AUT64/XTEA (AM270 VAG route; encoder: counter + 1, all types)",
+      "freq": "315 / 433.92 / 434.19-434.45 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Scher-Khan (Magic Code, PRO1/PRO2)",
+      "encoding": "PWM",
+      "rf": "AM/FM (Doctor/PP FM)",
+      "code": "Magic Code / PRO cipher + CRC (ARF/FoxFW encoder; Doctor/PP decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Star Line",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "KeeLoq (whole keystore searched; encoder: counter + 1)",
+      "freq": "433.92 MHz (ARF also 315)",
+      "tx": ""
+    },
+    {
+      "name": "Sheriff CFM (ZX-750/930 alarm)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "KeeLoq (encoder)",
+      "freq": "315 / 433.92 MHz (FoxFW 433)",
+      "tx": ""
+    },
+    {
+      "name": "KeeLoq (gates, garage doors, alarms)",
+      "encoding": "PWM",
+      "rf": "AM (Cardin S449/Sommer FSK12K)",
+      "code": "KeeLoq (keystore + user keys; simple/normal/secure/magic learning)",
+      "freq": "any band (300-868 MHz)",
+      "tx": ""
+    },
+    {
+      "name": "PSA (Peugeot/Citroen)",
+      "encoding": "Manchester",
+      "rf": "AM/FM",
+      "code": "TEA/XTEA/XOR + CRC8 (Recover key brute force; encoder: counter + 1)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Audi (Pandora; ARF/FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (scramble + parity engine; encoder)",
+      "freq": "315 / 433.92 / 868 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Audi V1 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (88-bit: Serial32 + Btn8 + Hop48; roundtrip encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Audi V2 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (72-bit: 64-bit key + 0x93 trailer; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "BMW CAS4 (ARF/FoxFW/Moon-FW)",
+      "encoding": "PWM / Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (64-bit; decode-only ARF/FoxFW2; Moon-FW encoder)",
+      "freq": "315 / 433.92 / 868 MHz (FoxFW/Moon 433)",
+      "tx": ""
+    },
+    {
+      "name": "Fiat SPA (ARF/FoxFW/Moon-FW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (64-bit; encoder)",
+      "freq": "315 / 433.92 MHz (FoxFW/Moon 433)",
+      "tx": ""
+    },
+    {
+      "name": "Fiat Multi V3/V5 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (70-bit V3 / 97-bit V5; encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Continental RKE (KR5V2X; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "313.8 / 315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "GM ABO1502T (FoxFW)",
+      "encoding": "PPM",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "314.9 / 315 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda KeeLoq (Moon-FW)",
+      "encoding": "PWM (inverted)",
+      "rf": "AM",
+      "code": "KeeLoq (66-bit LSB-first; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda HF (Honda/Acura; Moon-FW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (88-bit frame; 307.8 MHz / 433 variants; encoder)",
+      "freq": "307.8 / 315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V3 OOK/KL/FSK (Moon-FW)",
+      "encoding": "PWM / Manchester",
+      "rf": "AM/FM",
+      "code": "OOK 88-bit + KL 66-bit (315/433) + FSK 112-bit (433; Moon-FW encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Honda V8 (FoxFW)",
+      "encoding": "PWM (inverted)",
+      "rf": "AM",
+      "code": "KeeLoq 66-bit LSB-first (decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Hundai (New Hyundai; ARF/FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (Te=500 us; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Jeep V0 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (96-bit; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mazda Infinity (ARF/FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Whitening + interleave + parity checksum (encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mercedes / Maybach (ARF/FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (112-bit; encoder)",
+      "freq": "315 / 433.92 / 868 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Mitsubishi V0-a (ARF/FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM/FM",
+      "code": "Rolling Code (61-bit; encoder)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Peugeot V0 (PSA 80-bit; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (80-bit FFAD header; peugot_v0 encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "PSA2 / PSA OLD (ARF/FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM/FM (FoxFW v1 FM)",
+      "code": "Rolling Code (legacy PSA; encoder)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Porsche Touareg (ARF/FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (64-bit; encoder)",
+      "freq": "433.92 / 868.35 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Renault V3 (FoxFW)",
+      "encoding": "NRZ",
+      "rf": "AM/FM",
+      "code": "Rolling Code (64-160 bit 2-FSK; decode-only)",
+      "freq": "315 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Siemens VDO (5WY72XX; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (220 us half-bit; decode-only)",
+      "freq": "315.1 / 433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Microchip 6SC2 (FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (250 us half-bit; decode-only)",
+      "freq": "315.1 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Toyota V0 (Estima 2000; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (96-bit + complement bytes; encoder)",
+      "freq": "314.35 MHz (315 band)",
+      "tx": ""
+    },
+    {
+      "name": "VAG V4 (Moon-FW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (80-bit Manchester; encoder)",
+      "freq": "434.4 MHz (433 band)",
+      "tx": ""
+    },
+    {
+      "name": "Alps RKE (FWB1U545; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "Rolling Code (76-bit; decode-only; stub encoder refuses keys)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Code Alarm (FRDPC2002; FoxFW)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (60-bit; decode-only)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "Compustar (1WG3R/1WAMR; FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "433.92 MHz",
+      "tx": ""
+    },
+    {
+      "name": "AstroStart 2000 (FoxFW)",
+      "encoding": "PPM",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "372.4 MHz (flagged 315/433)",
+      "tx": ""
+    },
+    {
+      "name": "Audiovox PRO OE3B (FoxFW)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (decode-only; stub encoder refuses keys)",
+      "freq": "303.4 MHz (flagged 315)",
+      "tx": ""
+    }
+  ],
+  "gates": [
+    {
+      "name": "Security+ 1.0 / Security+ 2.0 (Chamberlain/LiftMaster)",
+      "encoding": "PWM ternary / Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (Sec+1 42-bit / Sec+2 62-bit)",
+      "freq": "310 / 315 / 390 / 433.92 / 868 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Somfy Telis (RTS) / Somfy Keytis",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (obfuscation + checksum; 56/80-bit)",
+      "freq": "433.42 / 433.92 / 868 MHz",
+      "tx": "next code, any button"
+    },
+    {
+      "name": "FAAC SLH",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "KeeLoq (FAAC learning, seed; 64-bit)",
+      "freq": "433.92 / 868.35 MHz",
+      "tx": "next code with seed; programming frames"
+    },
+    {
+      "name": "KingGates Stylo4k",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "KeeLoq (89-bit)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Jarolift (shutters)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "KeeLoq (normal learning; 72-bit)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Beninca ARC",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "AES-128 (128-bit; button 0 = hidden button)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Hoermann BiSecur (Momentum / FoxFW)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "AES-128 (frame CRC-8 checked)",
+      "freq": "868.35 MHz",
+      "tx": "re-sends stored frame (Momentum); decode-only (FoxFW)"
+    },
+    {
+      "name": "Cardin S508 (FoxFW / RM)",
+      "encoding": "Manchester",
+      "rf": "FM",
+      "code": "AES-128",
+      "freq": "868.35 MHz",
+      "tx": "decode only"
+    },
+    {
+      "name": "Nice FloR-S / Nice One",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (52/72-bit; needs /ext/subghz/assets/nice_flor_s)",
+      "freq": "433.92 / 868.35 MHz",
+      "tx": "next code with SD rainbow table (except Momentum)"
+    },
+    {
+      "name": "CAME Atomo",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Rolling Code (62-bit)",
+      "freq": "433.92 MHz (docs also 868)",
+      "tx": "next code"
+    },
+    {
+      "name": "Alutech AT-4N",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "TEA-style (72-bit; needs /ext/subghz/assets/alutech_at_4n)",
+      "freq": "433.92 MHz",
+      "tx": "next code with SD rainbow table"
+    },
+    {
+      "name": "Ditec GOL4",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (54-bit)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Phoenix V2, Hay21",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (52-bit Phoenix / 21-bit Hay21)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Prastel",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling / Static (25/42-bit)",
+      "freq": "315 / 433.92 MHz (docs +868)",
+      "tx": "next code (FoxFW2 decode-only)"
+    },
+    {
+      "name": "iDo 117/111",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (48-bit)",
+      "freq": "433.92 MHz",
+      "tx": "decode only"
+    },
+    {
+      "name": "CAME (12/18/24/25/42-bit) / CAME TWEE",
+      "encoding": "PWM / Manchester",
+      "rf": "AM",
+      "code": "Fixed / Pseudo-dynamic (CAME TWEE 54-bit)",
+      "freq": "315 / 433.92 / 868.35 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Nice FLO (12/24-bit)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code",
+      "freq": "315 / 433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Princeton (PT2262/EV1527), SMC5326, Holtek (+ ZKTeco)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (ZKTeco 430.50 MHz gen)",
+      "freq": "315 / 430.50 / 433.92 / 868 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Holtek HT12X",
+      "encoding": "PWM",
+      "rf": "AM/FM",
+      "code": "Fixed Code (12-bit)",
+      "freq": "315 / 433.92 / 868 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Linear, Linear Delta3, MegaCode, Chamberlain Code",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (Linear 300/315; Chamb. 300-390)",
+      "freq": "300 / 315 / 390 MHz (Doctor +433)",
+      "tx": "yes"
+    },
+    {
+      "name": "Hoermann HSM, Marantec, Marantec24",
+      "encoding": "PWM / Manchester",
+      "rf": "AM",
+      "code": "Fixed Code (Marantec CRC-8; Marantec24 868 only)",
+      "freq": "433.92 / 868.35 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "GateTX, BETT, Doitrand, Clemsa, Mastercode, Dickert MAHS, Elplast",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed / Dynamic (Doitrand 37-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Ansonic",
+      "encoding": "PWM",
+      "rf": "FM (Doctor AM)",
+      "code": "Fixed Code (12-bit DIP)",
+      "freq": "315 / 433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Roger",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (28-bit)",
+      "freq": "433.92 / 868.35 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Nero Sketch, Nero Radio, Revers RB2, Telcoma/Cardin EDGE",
+      "encoding": "PWM / Manchester",
+      "rf": "AM",
+      "code": "Fixed Code (Nero Radio static 56-bit)",
+      "freq": "433.92 / 434.42 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Allstar Firefly (318ALD31K)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (18-bit ternary DIP)",
+      "freq": "318 MHz (315 band; Doctor +433)",
+      "tx": "yes"
+    },
+    {
+      "name": "Power Smart, Dooya (shutters/blinds)",
+      "encoding": "Manchester / PWM",
+      "rf": "AM",
+      "code": "Fixed Code (Power Smart 433; Dooya 315/433)",
+      "freq": "315 / 433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "GangQi, Hollarm (GSM alarm remotes)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (byte sum)",
+      "freq": "433.92 MHz",
+      "tx": "yes, any button"
+    },
+    {
+      "name": "Freezer, Faac TM, Proteco (Unleashed)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (Freezer confirmed by repeat)",
+      "freq": "433.92 MHz (FAAC TM also 868)",
+      "tx": "yes"
+    },
+    {
+      "name": "BelKorn (Unleashed)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Rolling Code (118-bit)",
+      "freq": "433.92 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Cardin S449 / Sommer SOMloq (KeeLoq FM)",
+      "encoding": "PWM",
+      "rf": "FM (FSK12K / FSK476)",
+      "code": "KeeLoq (64-bit; Sommer 434.42/868.80; Cardin S449 433.92)",
+      "freq": "433.92 / 434.42 / 868.80 MHz",
+      "tx": "next code"
+    },
+    {
+      "name": "Magellan (Paradox security sensors)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (CRC-8)",
+      "freq": "433.92 MHz",
+      "tx": "yes (captured frame)"
+    },
+    {
+      "name": "X10 (home automation)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (complement bytes; 32-bit)",
+      "freq": "310 MHz (315 band)",
+      "tx": "decode only (no TX encoder)"
+    },
+    {
+      "name": "Legrand",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (confirmed by repeat; 18-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Doorbell32 (doorbells)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (confirmed by repeat, measured Te)",
+      "freq": "433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Intertechno_V3 (sockets, dimmers)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (32-bit)",
+      "freq": "315 / 433.92 / 868 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "KeyFinder (four-colour key finders), KeyFinder2",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (24-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes (KeyFinder: four colours)"
+    },
+    {
+      "name": "Feron (LED-light remotes)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (32-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Honeywell Sec (security sensors)",
+      "encoding": "Manchester",
+      "rf": "AM",
+      "code": "Fixed Code (CRC-16; 64-bit)",
+      "freq": "315 / 433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Honeywell (wireless doorbells / PIR)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (parity; 48-bit)",
+      "freq": "315 / 433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Treadmill37 (QH-433 treadmill remotes)",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (37-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes"
+    },
+    {
+      "name": "Nord ICE",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code (33-bit)",
+      "freq": "433.92 MHz",
+      "tx": "yes, any button"
+    },
+    {
+      "name": "Urmet",
+      "encoding": "PWM",
+      "rf": "AM",
+      "code": "Fixed Code",
+      "freq": "433.92 MHz",
+      "tx": "yes (including key files)"
+    }
+  ]
+}

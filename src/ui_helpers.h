@@ -43,5 +43,8 @@ bool ui_draw_marquee_top(
     const char* text,
     uint16_t tick);
 
+/** Draw 128x64 animated startup splash screen with RF keyfob artwork and creator badge. */
+void ui_draw_splash(Canvas* canvas, uint16_t tick);
+
 /** Case-insensitive substring search (ASCII). */
 bool ui_str_contains_ci(const char* haystack, const char* needle);

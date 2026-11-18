@@ -16,10 +16,11 @@
 #include "protocols_data.h"
 #include "ui_helpers.h"
 
-#define SEARCH_BUF_LEN  36
-#define MAX_LIST_ITEMS  128
-#define DETAIL_TEXT_LEN 384
-#define DETAIL_MAX_W    120
+#define SEARCH_BUF_LEN        36
+#define MAX_LIST_ITEMS        192
+#define DETAIL_TEXT_LEN       384
+#define DETAIL_MAX_W          120
+#define SPLASH_DURATION_TICKS 14
 
 typedef enum {
     SceneStart = 0,
@@ -30,6 +31,7 @@ typedef enum {
     SceneProtoList,
     SceneDetail,
     SceneInfo,
+    SceneSplash,
     SceneCount,
 } SceneId;
 
@@ -37,6 +39,7 @@ typedef enum {
     ViewIdMenu = 0,
     ViewIdProtoList,
     ViewIdDetail,
+    ViewIdSplash,
     ViewIdTextInput,
     ViewIdWidget,
     ViewIdPopup,
@@ -49,6 +52,7 @@ typedef enum {
     CustomEventPopupDone,
     CustomEventDetailPrev,
     CustomEventDetailNext,
+    CustomEventSplashDone,
 } CustomEvent;
 
 typedef enum {
@@ -118,6 +122,11 @@ typedef struct {
 } DetailViewModel;
 
 typedef struct {
+    uint16_t tick;
+    bool done;
+} SplashViewModel;
+
+typedef struct {
     Gui* gui;
     ViewDispatcher* view_dispatcher;
     SceneManager* scene_manager;
@@ -125,6 +134,7 @@ typedef struct {
     View* menu_view;
     View* list_view;
     View* detail_view;
+    View* splash_view;
     TextInput* text_input;
     Widget* widget;
     Popup* popup;
@@ -186,33 +196,34 @@ static const char* const kFilterShortTitles[FilterCount] = {
 };
 
 static const char* const kRfPresetInfoText = "\e#ModulationFlip v1.0\n"
-                                             "114 RF protocols\n"
-                                             "78 Car/Alarm + 36 Gate/Home\n"
-                                             "Sourced strictly from KAT docs.\n"
+                                             "Created by limbo\n"
+                                             "142 RF protocols\n"
+                                             "99 Car/Alarm + 43 Gate/Home\n"
                                              "\n"
-                                             "\e#Flipper Hopper List\n"
-                                             "315.00, 390.00, 430.50,\n"
-                                             "433.92, 434.25, 434.42,\n"
-                                             "868.35 MHz\n"
+                                             "\e#Flipper Hopper Lists\n"
+                                             "Std/Momentum/Unleashed/FoxFW:\n"
+                                             "315, 390, 430.5, 433.92,\n"
+                                             "434.42, 868.35 MHz\n"
+                                             "Flipper-ARF: + 434.25 MHz\n"
+                                             "Doctor FW: 315, 390, 430.5,\n"
+                                             "433.14, 433.47, 433.92,\n"
+                                             "434.37, 434.42, 868.35 MHz\n"
                                              "\n"
                                              "\e#CC1101 Presets & Mod\n"
-                                             "AM650 -> AM/OOK protocols\n"
-                                             "FM476 / FM238 -> FM/2-FSK\n"
-                                             "(e.g. 2-FSK +/-47.61 kHz)\n"
-                                             "Other FWs use AM preset only;\n"
-                                             "FM rx_raw needs doctor-fw.\n"
+                                             "AM270 / AM650 -> OOK/AM\n"
+                                             "(VAG route uses AM270)\n"
+                                             "FM238 -> Honda1 (Honda Static)\n"
+                                             "FM12K -> F4 (Ford, Honda V2/3)\n"
+                                             "FM476 -> 2-FSK +/-47.61 kHz\n"
+                                             "Doctor adds AM101, FM14K,\n"
+                                             "FM15k, FM20K/FM20KR (+Si4463)\n"
+                                             "KeeLoq FM: Cardin S449 &\n"
+                                             "Sommer SOMloq (FSK12K/476)\n"
                                              "\n"
-                                             "\e#Reference Sources\n"
-                                             "ProtoPirate, Flipper-ARF,\n"
-                                             "doctor-firmware, Momentum,\n"
-                                             "RogueMaster, FoxFW.\n"
-                                             "\n"
-                                             "\e#Consolidated Names\n"
-                                             "BMW CAS4 -> BMW\n"
-                                             "Porsche Touareg -> Cayenne\n"
-                                             "KeeLoq Toyota -> Toyota/Lexus\n"
-                                             "PSA2 (PSA OLD) -> PSA\n"
-                                             "Suzuki -> Kia V0 (Suzuki V0)\n";
+                                             "\e#Verified Repo Sources\n"
+                                             "Flipper-ARF, doctor-firmware,\n"
+                                             "Unleashed, Momentum, FoxFW,\n"
+                                             "ProtoPirate, Moon-Firmware\n";
 
 // --- Filtering Helpers ---
 
@@ -1150,6 +1161,65 @@ static void scene_info_on_exit(void* context) {
     widget_reset(app->widget);
 }
 
+static void splash_view_draw_callback(Canvas* canvas, void* _model) {
+    SplashViewModel* m = _model;
+    ui_draw_splash(canvas, m->tick);
+}
+
+static bool splash_view_input_callback(InputEvent* event, void* context) {
+    ModulationFlipApp* app = context;
+    if(event->key == InputKeyBack) return false;
+    if(event->type == InputTypePress) return true;
+    if(event->type != InputTypeShort && event->type != InputTypeLong) return false;
+
+    bool emit_done = false;
+    with_view_model(
+        app->splash_view,
+        SplashViewModel * m,
+        {
+            if(!m->done) {
+                m->done = true;
+                emit_done = true;
+            }
+        },
+        false);
+    if(emit_done) {
+        view_dispatcher_send_custom_event(app->view_dispatcher, CustomEventSplashDone);
+    }
+    return true;
+}
+
+static void scene_splash_on_enter(void* context) {
+    ModulationFlipApp* app = context;
+    with_view_model(
+        app->splash_view,
+        SplashViewModel * m,
+        {
+            m->tick = 0;
+            m->done = false;
+        },
+        true);
+    view_dispatcher_switch_to_view(app->view_dispatcher, ViewIdSplash);
+}
+
+static bool scene_splash_on_event(void* context, SceneManagerEvent event) {
+    ModulationFlipApp* app = context;
+    if(event.type == SceneManagerEventTypeCustom && event.event == CustomEventSplashDone) {
+        scene_manager_previous_scene(app->scene_manager);
+        return true;
+    }
+    if(event.type == SceneManagerEventTypeBack) {
+        scene_manager_stop(app->scene_manager);
+        view_dispatcher_stop(app->view_dispatcher);
+        return true;
+    }
+    return false;
+}
+
+static void scene_splash_on_exit(void* context) {
+    UNUSED(context);
+}
+
 static const AppSceneOnEnterCallback kSceneOnEnterHandlers[] = {
     [SceneStart] = scene_start_on_enter,
     [SceneBrands] = scene_brands_on_enter,
@@ -1159,6 +1229,7 @@ static const AppSceneOnEnterCallback kSceneOnEnterHandlers[] = {
     [SceneProtoList] = scene_proto_list_on_enter,
     [SceneDetail] = scene_detail_on_enter,
     [SceneInfo] = scene_info_on_enter,
+    [SceneSplash] = scene_splash_on_enter,
 };
 
 static const AppSceneOnEventCallback kSceneOnEventHandlers[] = {
@@ -1170,6 +1241,7 @@ static const AppSceneOnEventCallback kSceneOnEventHandlers[] = {
     [SceneProtoList] = scene_proto_list_on_event,
     [SceneDetail] = scene_detail_on_event,
     [SceneInfo] = scene_info_on_event,
+    [SceneSplash] = scene_splash_on_event,
 };
 
 static const AppSceneOnExitCallback kSceneOnExitHandlers[] = {
@@ -1181,6 +1253,7 @@ static const AppSceneOnExitCallback kSceneOnExitHandlers[] = {
     [SceneProtoList] = scene_proto_list_on_exit,
     [SceneDetail] = scene_detail_on_exit,
     [SceneInfo] = scene_info_on_exit,
+    [SceneSplash] = scene_splash_on_exit,
 };
 
 static const SceneManagerHandlers kSceneHandlers = {
@@ -1206,7 +1279,25 @@ static void tick_event_callback(void* context) {
     ModulationFlipApp* app = context;
     uint32_t scene = scene_manager_get_current_scene(app->scene_manager);
 
-    if(scene == SceneStart || scene == SceneBrands || scene == SceneFilter) {
+    if(scene == SceneSplash) {
+        bool emit_done = false;
+        with_view_model(
+            app->splash_view,
+            SplashViewModel * m,
+            {
+                if(!m->done) {
+                    m->tick++;
+                    if(m->tick >= SPLASH_DURATION_TICKS) {
+                        m->done = true;
+                        emit_done = true;
+                    }
+                }
+            },
+            true);
+        if(emit_done) {
+            view_dispatcher_send_custom_event(app->view_dispatcher, CustomEventSplashDone);
+        }
+    } else if(scene == SceneStart || scene == SceneBrands || scene == SceneFilter) {
         bool do_update = false;
         with_view_model(
             app->menu_view,
@@ -1292,6 +1383,13 @@ static ModulationFlipApp* modulation_flip_app_alloc(void) {
     view_set_input_callback(app->detail_view, detail_view_input_callback);
     view_dispatcher_add_view(app->view_dispatcher, ViewIdDetail, app->detail_view);
 
+    app->splash_view = view_alloc();
+    view_allocate_model(app->splash_view, ViewModelTypeLocking, sizeof(SplashViewModel));
+    view_set_context(app->splash_view, app);
+    view_set_draw_callback(app->splash_view, splash_view_draw_callback);
+    view_set_input_callback(app->splash_view, splash_view_input_callback);
+    view_dispatcher_add_view(app->view_dispatcher, ViewIdSplash, app->splash_view);
+
     // SDK modules
     app->text_input = text_input_alloc();
     view_dispatcher_add_view(
@@ -1304,6 +1402,7 @@ static ModulationFlipApp* modulation_flip_app_alloc(void) {
     view_dispatcher_add_view(app->view_dispatcher, ViewIdPopup, popup_get_view(app->popup));
 
     scene_manager_next_scene(app->scene_manager, SceneStart);
+    scene_manager_next_scene(app->scene_manager, SceneSplash);
     return app;
 }
 
@@ -1318,6 +1417,9 @@ static void modulation_flip_app_free(ModulationFlipApp* app) {
 
     view_dispatcher_remove_view(app->view_dispatcher, ViewIdTextInput);
     text_input_free(app->text_input);
+
+    view_dispatcher_remove_view(app->view_dispatcher, ViewIdSplash);
+    view_free(app->splash_view);
 
     view_dispatcher_remove_view(app->view_dispatcher, ViewIdDetail);
     view_free(app->detail_view);
