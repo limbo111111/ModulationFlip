@@ -60,7 +60,15 @@ The compiled application is output to `dist/modulation_flip.fap`. Copy it to you
 SD Card/apps/Sub-GHz/modulation_flip.fap
 ```
 
-Prebuilt CI binaries for both `dev` and `release` firmware channels are built via [`.github/workflows/build.yml`](.github/workflows/build.yml).
+Prebuilt `.fap` binaries are built via [`.github/workflows/build.yml`](.github/workflows/build.yml) for:
+
+- **Unleashed** (`release` & `dev`)
+- **Momentum** (`release` & `dev`)
+- **Flipper-ARF** (`main` via `fbt`)
+- **Doctor Firmware** (latest release SDK)
+- **Official Firmware** (`release` & `dev`)
+
+Download the individual firmware `.fap` or the combined `ModulationFlip-all-firmwares` bundle from GitHub Actions artifacts.
 
 ### Regenerating Protocol Tables
 

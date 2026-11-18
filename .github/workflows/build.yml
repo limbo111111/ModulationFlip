@@ -1,34 +1,183 @@
-name: "FAP: Build for multiple SDK sources"
+name: "FAP: Multi-Firmware Build"
 
 on:
   push:
     branches:
       - main
   pull_request:
-  schedule:
-    - cron: "1 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  ufbt-build:
+  lint:
+    name: "ufbt: Lint"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - name: dev channel
-            sdk-channel: dev
-          - name: release channel
-            sdk-channel: release
-    name: "ufbt: Build for ${{ matrix.name }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Lint with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        with:
+          task: lint
+          sdk-channel: release
+
+  ufbt-builds:
+    name: "ufbt: Build for ${{ matrix.name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Unleashed (release)
+            slug: unleashed-release
+            sdk-index-url: https://up.unleashedflip.com/directory.json
+            sdk-channel: release
+            sdk-repo: ""
+          - name: Unleashed (dev)
+            slug: unleashed-dev
+            sdk-index-url: https://up.unleashedflip.com/directory.json
+            sdk-channel: dev
+            sdk-repo: ""
+          - name: Momentum (release)
+            slug: momentum-release
+            sdk-index-url: https://up.momentum-fw.dev/firmware/directory.json
+            sdk-channel: release
+            sdk-repo: ""
+          - name: Momentum (dev)
+            slug: momentum-dev
+            sdk-index-url: https://up.momentum-fw.dev/firmware/directory.json
+            sdk-channel: dev
+            sdk-repo: ""
+          - name: Doctor Firmware (latest)
+            slug: doctor-fw
+            sdk-index-url: ""
+            sdk-channel: ""
+            sdk-repo: thedoctorz/doctor-firmware
+          - name: Official (release)
+            slug: official-release
+            sdk-index-url: ""
+            sdk-channel: release
+            sdk-repo: ""
+          - name: Official (dev)
+            slug: official-dev
+            sdk-index-url: ""
+            sdk-channel: dev
+            sdk-repo: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve latest SDK URL
+        id: sdk-release
+        if: matrix.sdk-repo != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SDK_URL=$(gh release view --repo "${{ matrix.sdk-repo }}" --json assets --jq '([.assets[] | select(.name | test("^flipper-z-f7-sdk-.*\\.zip$") and (test("e\\.zip$") | not))][0].url // [.assets[] | select(.name | test("^flipper-z-f7-sdk-.*\\.zip$"))][0].url)')
+          if [ -z "$SDK_URL" ] || [ "$SDK_URL" = "null" ]; then
+            echo "Failed to resolve SDK archive URL from ${{ matrix.sdk-repo }}"
+            exit 1
+          fi
+          echo "Resolved SDK URL: $SDK_URL"
+          echo "url=$SDK_URL" >> "$GITHUB_OUTPUT"
+
       - name: Build with ufbt
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
+          sdk-index-url: ${{ matrix.sdk-index-url }}
           sdk-channel: ${{ matrix.sdk-channel }}
-      - name: Upload app artifacts
+          sdk-url: ${{ steps.sdk-release.outputs.url }}
+
+      - name: Prepare named FAP artifact
+        run: |
+          API_VER=$(printf '%s' "${{ steps.build-app.outputs.api-version }}" | tr -cd 'A-Za-z0-9._-')
+          if [ -z "$API_VER" ]; then
+            API_VER="unknown"
+          fi
+          mkdir -p release_artifacts
+          cp "${{ steps.build-app.outputs.fap-dir }}/modulation_flip.fap" "release_artifacts/modulation_flip-${{ matrix.slug }}-api-${API_VER}.fap"
+          echo "ARTIFACT_API=${API_VER}" >> "$GITHUB_ENV"
+
+      - name: Upload app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.build-app.outputs.suffix }}
-          path: ${{ steps.build-app.outputs.fap-artifacts }}
+          name: modulation_flip-${{ matrix.slug }}-api-${{ env.ARTIFACT_API }}
+          path: release_artifacts/*.fap
+          if-no-files-found: error
+
+  flipper-arf:
+    name: "fbt: Build for Flipper-ARF"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Flipper-ARF firmware
+        uses: actions/checkout@v4
+        with:
+          repository: D4C1-Labs/Flipper-ARF
+          path: flipper-arf
+          fetch-depth: 1
+
+      - name: Checkout ModulationFlip into applications_user
+        uses: actions/checkout@v4
+        with:
+          path: flipper-arf/applications_user/modulation_flip
+
+      - name: Cache fbt toolchain
+        uses: actions/cache@v4
+        with:
+          path: flipper-arf/toolchain
+          key: ${{ runner.os }}-arf-toolchain-${{ hashFiles('flipper-arf/fbt_options.py', 'flipper-arf/scripts/toolchain/**') }}
+          restore-keys: |
+            ${{ runner.os }}-arf-toolchain-
+
+      - name: Build modulation_flip.fap against Flipper-ARF
+        working-directory: flipper-arf
+        run: |
+          chmod +x fbt
+          ./fbt COMPACT=1 DEBUG=0 fap_modulation_flip
+          API_VER=$(FBT_NO_SYNC=1 ./fbt -s COMPACT=1 DEBUG=0 get_apiversion | tail -n 1 | tr -cd 'A-Za-z0-9._-')
+          if [ -z "$API_VER" ]; then
+            API_VER="unknown"
+          fi
+          FAP_PATH=$(find build -name "modulation_flip.fap" | head -n 1)
+          if [ -z "$FAP_PATH" ] || [ ! -f "$FAP_PATH" ]; then
+            echo "modulation_flip.fap not found under flipper-arf/build"
+            exit 1
+          fi
+          mkdir -p ../release_artifacts
+          cp "$FAP_PATH" "../release_artifacts/modulation_flip-flipper-arf-api-${API_VER}.fap"
+          echo "ARTIFACT_API=${API_VER}" >> "$GITHUB_ENV"
+
+      - name: Upload Flipper-ARF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: modulation_flip-flipper-arf-api-${{ env.ARTIFACT_API }}
+          path: release_artifacts/*.fap
+          if-no-files-found: error
+
+  bundle:
+    name: "Bundle All Firmware FAPs"
+    needs: [lint, ufbt-builds, flipper-arf]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all built FAP artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: modulation_flip-*
+          path: all_faps
+          merge-multiple: true
+
+      - name: List bundled FAPs
+        run: ls -lh all_faps/
+
+      - name: Upload combined bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ModulationFlip-all-firmwares
+          path: all_faps/*.fap
+          if-no-files-found: error
